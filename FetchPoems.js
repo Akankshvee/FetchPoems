@@ -4,6 +4,7 @@ const Pagination = ({ items, pageSize, onPageChange }) => {
 
   let num = Math.ceil(items.length / pageSize);
   console.log(num);
+ 
   let pages = range(1, num);
   const list = pages.map(page => {
     return (
@@ -98,12 +99,14 @@ const dataFetchReducer = (state, action) => {
 };
 // App that gets data from Hacker News url
 function App() {
-  const { Fragment, useState, useEffect, useReducer } = React;
-  const { Container, Row, Col } = ReactBootstrap;
+  const { Fragment,  useState, useEffect, useReducer } = React;
+  const { Container, Row, Col, Card, Button } = ReactBootstrap;
   const [query, setQuery] = useState("adam");
   const [currentPage, setCurrentPage] = useState(1);
   const [line, setLines] = useState("");
-  const pageSize = 10;
+  const [show, setShow] = useState(false);
+  //const target = useRef(null);
+  const pageSize = 20;
   const [{ data, isLoading, isError }, doFetch] = useDataApi(
     "https://poetrydb.org/author/adam"
   );
@@ -147,39 +150,49 @@ function App() {
     {!isLoading && data == null ? (
       <div className="msg">No results found ... </div>
     ) : (
-    <Row>
-    <h1> {isLoading}</h1>
-    <p> </p>
-    <Pagination
-        items={data}
-        pageSize={pageSize}
-        onPageChange={handlePageChange}
-      >
-    </Pagination>
-    <p> </p>
-    <Col xs={4}>
-    <h2>Search Results: </h2>
-    <ul>
-    {page?.map(({title, author, lines})  => (
-        <li key={title.toString()}>
-         
-          <button value = {lines} onClick={(event) => setLines(event.target.value)} className="listAlign1" >
-          {title}, {author}
-      </button>
-        </li>
-        
-      ))}
-    </ul>
-    </Col>
-    <Col>
-        <h2>Selected Poem: </h2>
-        <div className="poemPreview1">{line.split(",").join(",\n")}</div>
-    </Col>
-    </Row>
-    )}
-    </div>
-    </div>
-  </Fragment>
+      
+              <Row>
+                <h1> {isLoading}</h1>
+                <p> </p>
+                
+                <Pagination
+                  items={data}
+                  pageSize={pageSize}
+                  onPageChange={handlePageChange}
+                >
+                </Pagination>
+                <p> </p>
+                <Col>
+                  <h2>Search Results: </h2>
+                  <Row xs="auto">
+
+                    {page?.map(({ title, author, lines }) => (
+
+                    
+                        <Card style={{ width: '15rem' }}>
+                          <Card.Body key={title.toString()}>
+                            <Card.Title>Title: {title}</Card.Title>
+                            <Card.Text>Author: {author}</Card.Text>
+                            <Button variant="primary" value={lines} onClick={(event) => setLines(event.target.value)}>View Poem</Button>
+                          </Card.Body>
+                        </Card>
+                     
+                    ))}
+                  </Row>
+                </Col>
+                <Col>
+                  <h2>Selected Poem: </h2>
+                  <div className="poemPreview1">{line.split(",").join(",\n")} </div>
+                </Col>
+
+              </Row>
+            
+          )}
+
+        </div>
+      </div>
+
+    </Fragment>
   );
 }
 
